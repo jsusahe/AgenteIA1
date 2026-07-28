@@ -4,7 +4,7 @@ import requests
 import os
 
 # --- CONFIGURACIÓN ---
-DEEPSEEK_API_KEY = "sk-ead2c81d2119440db3e453f1a179d70f" # <--- Pega tu clave aquí
+DEEPSEEK_API_KEY = "os.environ.get('DEEPSEEK_API_KEY')" # <--- Pega tu clave aquí
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
 # ---------------------
 

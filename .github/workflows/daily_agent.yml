@@ -1,0 +1,43 @@
+name: Agente IA Diario
+
+on:
+  schedule:
+    # Ejecuta a las 8:00 AM UTC todos los días (ajusta según tu zona horaria)
+    - cron: '0 8 * * *'
+  # Opcional: Permite ejecutar el workflow manualmente desde la pestaña "Actions"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install yt-dlp google-api-python-client google-auth-oauthlib requests edge-tts
+
+      - name: Ejecutar Agente (YouTube -> Resumen -> Audio -> HTML)
+        run: |
+          python youtube_fetcher.py
+          # Podríamos tener un script orquestador principal. Crearemos uno llamado main.py.
+          python main.py # Este script llamará a todas las funciones en orden.
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          PARENT_FOLDER_ID: ${{ secrets.PARENT_FOLDER_ID }}
+
+      - name: Subir Artefactos (opcional, para ver resultados en GitHub)
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-ia
+          path: |
+            index.html
+            resumen_ia.mp3

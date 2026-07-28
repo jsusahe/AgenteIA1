@@ -10,7 +10,7 @@ from googleapiclient.errors import HttpError
 
 # --- CONFIGURACIÓN ---
 SCOPES = ['https://www.googleapis.com/auth/drive.file']  # Permisos para crear archivos
-PARENT_FOLDER_ID = 'AQUI_EL_ID_DE_TU_CARPETA_EN_DRIVE' # Opcional: ID de carpeta donde guardar
+PARENT_FOLDER_ID = os.environ.get('PARENT_FOLDER_ID') # Opcional: ID de carpeta donde guardar
 # ---------------------
 
 def authenticate_drive():

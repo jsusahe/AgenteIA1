@@ -7,7 +7,7 @@ import requests
 import time
 
 # --- CONFIGURACIÓN (MODIFICA AQUÍ TUS DATOS) ---
-YOUTUBE_API_KEY = "AIzaSyBcEqi8EaP-kG-ciSwztEedaEvWoUDb6tE" # <--- Pega tu clave aquí
+YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY') # <--- Pega tu clave aquí
 CHANNEL_URLS = [
     "https://www.youtube.com/@XavierMitjana",
     "https://www.youtube.com/@EDteam",
@@ -16,7 +16,7 @@ CHANNEL_URLS = [
 # Puedes añadir más canales a esta lista en el futuro.
 
 # DeepSeek API details
-DEEPSEEK_API_KEY = "sk-ead2c81d2119440db3e453f1a179d70f" # <--- Pega tu clave aquí
+DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY') # <--- Pega tu clave aquí
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions" # URL para el modelo de chat
 # ---------------------------------------------
 

@@ -84,7 +84,6 @@ def get_videos_from_channel(channel_id):
 
 def get_transcript(video_id):
     """Obtiene la transcripción de un video usando yt-dlp."""
-    BROWSER = 'chrome'
     # Los parámetros de yt-dlp para obtener solo la transcripción
     ydl_opts = {
         'quiet': True,
@@ -93,8 +92,18 @@ def get_transcript(video_id):
         'writeautomaticsub': True,
         'subtitleslangs': ['es', 'en'], # Intenta español primero, luego inglés
         'extract_flat': 'in_playlist',
-        'cookiesfrombrowser': (BROWSER,),
     }
+    # --- CONFIGURACIÓN DE COOKIES ---
+    # Si existe un archivo cookies.txt, úsalo (para GitHub Actions)
+    if os.path.exists('cookies.txt'):
+        ydl_opts['cookiefile'] = 'cookies.txt'
+        print("DEBUG: Usando cookies desde cookies.txt")
+    else:
+        # Si no, intenta usar las del navegador (para pruebas locales)
+        # Reemplaza 'chrome' con tu navegador
+        ydl_opts['cookiesfrombrowser'] = ('chrome',)
+        print("DEBUG: Usando cookies desde el navegador")
+    # -------------------------------
     try:
         with YoutubeDL(ydl_opts) as ydl:
             # yt-dlp puede obtener la información de la transcripción directamente

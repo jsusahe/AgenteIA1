@@ -51,7 +51,7 @@ jobs:
           echo "✅ Archivo cookies.txt creado."
         shell: bash
 
-      # PASO 5: Verificar el archivo de cookies (para depuración)
+      # PASO 5.1: Verificar el archivo de cookies (para depuración)
       - name: Verificar archivo de cookies
         run: |
           echo "📄 Verificando archivo cookies.txt..."
@@ -59,6 +59,14 @@ jobs:
           head -n 1 cookies.txt
           echo "Tamaño del archivo en bytes:"
           wc -c cookies.txt
+        shell: bash
+
+      # PASO 5.2: RESTAURAR TOKEN DE GOOGLE DRIVE (NUEVO)
+      - name: Restaurar token de Google Drive
+        run: |
+          echo "🔑 Restaurando token.json desde el secreto..."
+          echo "${{ secrets.DRIVE_TOKEN_JSON }}" | base64 -d > token.json
+          echo "✅ token.json creado."
         shell: bash
 
       # PASO 6: Instalar dependencias Python

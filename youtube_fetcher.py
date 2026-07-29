@@ -84,6 +84,7 @@ def get_videos_from_channel(channel_id):
 
 def get_transcript(video_id):
     """Obtiene la transcripción de un video usando yt-dlp."""
+    BROWSER = 'chrome'
     # Los parámetros de yt-dlp para obtener solo la transcripción
     ydl_opts = {
         'quiet': True,
@@ -92,6 +93,7 @@ def get_transcript(video_id):
         'writeautomaticsub': True,
         'subtitleslangs': ['es', 'en'], # Intenta español primero, luego inglés
         'extract_flat': 'in_playlist',
+        'cookiesfrombrowser': (BROWSER,),
     }
     try:
         with YoutubeDL(ydl_opts) as ydl:

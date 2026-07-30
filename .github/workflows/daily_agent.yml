@@ -61,7 +61,7 @@ jobs:
           wc -c cookies.txt
         shell: bash
 
-      # PASO 5.2: RESTAURAR TOKEN DE GOOGLE DRIVE (NUEVO)
+      # PASO 5.2: RESTAURAR TOKEN DE GOOGLE DRIVE
       - name: Restaurar token de Google Drive
         run: |
           echo "🔑 Restaurando token.json desde el secreto..."
@@ -73,7 +73,7 @@ jobs:
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          pip install yt-dlp google-api-python-client google-auth-oauthlib requests edge-tts python-dotenv yt-dlp-ejs
+          pip install yt-dlp google-api-python-client google-auth-oauthlib requests edge-tts python-dotenv yt-dlp-ejs feedparser
 
       # PASO 7: Ejecutar el agente (genera index.html, resumen_ia.mp3 y la carpeta historial/)
       - name: Ejecutar Agente

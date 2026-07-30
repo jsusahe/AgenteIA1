@@ -216,10 +216,10 @@ def generate_html_document(summary_data, audio_filename, output_filename="index.
         <h2>🎧 Resumen en Audio</h2>
         <div class="audio-player">
             <audio controls style="width: 100%;">
-                <source src="{audio_filename}" type="audio/mpeg">
+                <source src="{resumen_ia.mp3}" type="audio/mpeg">
                 Tu navegador no soporta el elemento de audio.
             </audio>
-            <p><a href="{audio_filename}" download>Descargar audio</a></p>
+            <p><a href="{resumen_ia.mp3}" download>Descargar audio</a></p>
         </div>
 
         <!-- Histórico -->

@@ -158,7 +158,7 @@ def run_agent():
     # Añadir noticias de YouTube (convertir al formato esperado por summary_generator)
     for video in youtube_videos:
         combined_news.append({
-            'title': video.get('title', 'Sin título'),  # <--- CAMBIADO DE 'titulo' a 'title'
+            'title': video.get('title', 'Sin título'),
             'resumen': video.get('transcript', '')[:500] if video.get('transcript') else 'Transcripción no disponible',
             'fuente': f"YouTube: {video.get('channel', 'Desconocido')}",
             'url': video.get('url', '#'),
@@ -168,7 +168,7 @@ def run_agent():
     # Añadir noticias externas
     for article in external_news:
         combined_news.append({
-            'title': article.get('title', 'Sin título'),  # <--- CAMBIADO DE 'titulo' a 'title'
+            'title': article.get('title', 'Sin título'),
             'resumen': article.get('summary', '')[:500],
             'fuente': article.get('source', 'Fuente desconocida'),
             'url': article.get('link', '#'),
@@ -195,21 +195,28 @@ def run_agent():
     try:
         summary_text = summary_data.get('summary', '')
         audio_file = generate_audio(summary_text, audio_filename)
-        if audio_file:
+        if audio_file and os.path.exists(audio_file):
             print(f"✅ Audio generado: {audio_file}")
         else:
             print("⚠️ No se pudo generar el audio, continuando sin él")
+            audio_file = None
     except Exception as e:
         print(f"⚠️ Error al generar audio: {e}")
         print("   Continuando sin audio")
+        audio_file = None
 
     # --- PASO 4: Generar documento HTML con fecha ---
     print("\n📄 PASO 4: Generando documento HTML...")
     html_filename = get_daily_filename("resumen", "html")
     try:
+        # Asegurar que el audio_filename que se pasa al HTML sea siempre el nombre correcto
+        # Si no hay audio, usar un nombre por defecto
+        audio_for_html = audio_file if audio_file else "audio_no_disponible.mp3"
+        print(f"🔊 Usando audio para HTML: {audio_for_html}")
+        
         html_file = generate_html_document(
             summary_data, 
-            audio_file if audio_file else "audio_no_disponible.mp3",
+            audio_for_html,
             html_filename
         )
         print(f"✅ Documento HTML generado: {html_file}")

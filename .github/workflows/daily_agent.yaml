@@ -69,11 +69,12 @@ jobs:
           echo "✅ token.json creado."
         shell: bash
 
-      # PASO 6: Instalar dependencias Python
+      # PASO 6: Instalar dependencias Python (CON YT-DLP ACTUALIZADO)
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          pip install yt-dlp google-api-python-client google-auth-oauthlib requests edge-tts python-dotenv yt-dlp-ejs feedparser
+          pip install -U yt-dlp  # <--- FORZAR ACTUALIZACIÓN
+          pip install google-api-python-client google-auth-oauthlib requests edge-tts python-dotenv yt-dlp-ejs feedparser
 
       # PASO 7: Ejecutar el agente (genera index.html, resumen_ia.mp3 y la carpeta historial/)
       - name: Ejecutar Agente

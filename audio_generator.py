@@ -15,7 +15,7 @@ def generate_audio(summary_text, output_filename="resumen_ia.mp3"):
     command = [
         "edge-tts",
         "--text", summary_text,
-        "--voice", "es-ES-ElviraNeural", # Voz en español
+        "--voice", "es-CO-SalomeNeural",  # Voz de Colombia
         "--write-media", output_filename
     ]
     try:

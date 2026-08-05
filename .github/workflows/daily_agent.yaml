@@ -1,0 +1,111 @@
+name: Agente IA Diario y Publicación Web
+
+on:
+  schedule:
+    # Ejecuta a las 8:00 AM UTC todos los días (ajusta según tu zona horaria)
+    - cron: '0 8 * * *'
+  # Permite ejecutar el workflow manualmente desde la pestaña "Actions"
+  workflow_dispatch:
+
+# --- PERMISOS NECESARIOS PARA GITHUB PAGES ---
+permissions:
+  contents: read       # Permite leer el contenido del repositorio
+  pages: write         # Permite escribir en GitHub Pages
+  id-token: write      # Necesario para la autenticación con Pages
+
+# --- CONTROL DE CONCURRENCIA ---
+# Evita que dos despliegues se ejecuten al mismo tiempo
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # ============================================
+  # TRABAJO 1: GENERAR CONTENIDO (TU AGENTE)
+  # ============================================
+  build-agent:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # PASO 1: Descargar el código del repositorio
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      # PASO 2: Configurar Python
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'  # Actualizado a 3.11 para evitar deprecación
+
+      # PASO 3: Instalar Deno (necesario para resolver desafíos JS de YouTube)
+      - name: Instalar Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # PASO 4: Restaurar cookies de YouTube desde el secreto
+      - name: Restaurar cookies de YouTube
+        run: |
+          echo "🔑 Restaurando cookies desde el secreto..."
+          echo "${{ secrets.YOUTUBE_COOKIES }}" | base64 -d > cookies.txt
+          echo "✅ Archivo cookies.txt creado."
+        shell: bash
+
+      # PASO 5.1: Verificar el archivo de cookies (para depuración)
+      - name: Verificar archivo de cookies
+        run: |
+          echo "📄 Verificando archivo cookies.txt..."
+          echo "Primera línea del archivo:"
+          head -n 1 cookies.txt
+          echo "Tamaño del archivo en bytes:"
+          wc -c cookies.txt
+        shell: bash
+
+      # PASO 5.2: RESTAURAR TOKEN DE GOOGLE DRIVE
+      - name: Restaurar token de Google Drive
+        run: |
+          echo "🔑 Restaurando token.json desde el secreto..."
+          echo "${{ secrets.DRIVE_TOKEN_JSON }}" | base64 -d > token.json
+          echo "✅ token.json creado."
+        shell: bash
+
+      # PASO 6: Instalar dependencias Python
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install yt-dlp google-api-python-client google-auth-oauthlib requests edge-tts python-dotenv yt-dlp-ejs feedparser
+
+      # PASO 7: Ejecutar el agente (genera index.html, resumen_ia.mp3 y la carpeta historial/)
+      - name: Ejecutar Agente
+        run: python main.py
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          PARENT_FOLDER_ID: ${{ secrets.PARENT_FOLDER_ID }}
+
+      # PASO 8: Subir TODOS los archivos como artefacto para GitHub Pages
+      # Esto incluye: index.html, resumen_ia.mp3 y la carpeta historial/
+      - name: Subir artefacto para GitHub Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./  # Sube toda la carpeta raíz del proyecto
+
+  # ============================================
+  # TRABAJO 2: DESPLEGAR EN GITHUB PAGES
+  # ============================================
+  deploy-pages:
+    # Este trabajo se ejecuta SOLO si el trabajo 'build-agent' tiene éxito
+    needs: build-agent
+    runs-on: ubuntu-latest
+    
+    # Define el entorno de despliegue
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      # Este paso se encarga de todo el despliegue
+      # Solo necesita el artefacto que subió el trabajo anterior
+      - name: Desplegar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

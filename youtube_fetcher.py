@@ -99,7 +99,6 @@ def get_transcript(video_id):
     """
     Obtiene la transcripción de un video usando yt-dlp con reintentos y tolerancia a errores.
     """
-    # Configuración optimizada con reintentos y formatos ligeros
     ydl_opts = {
         'quiet': True,
         'skip_download': True,
@@ -112,20 +111,19 @@ def get_transcript(video_id):
         'no_warnings': True,
         'verbose': False,
         'remote_components': ['ejs:github'],
-        # --- MEJORAS PARA ROBUSTEZ ---
-        'format': 'bestaudio[ext=m4a]',  # Formato más ligero y rápido
+        # --- FORMATO MÁS FLEXIBLE ---
+        'format': 'bestaudio',  # <--- CAMBIADO: ya no restringe a m4a
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         },
         'extractor_args': {
             'youtube': {
-                'player_client': ['android', 'web'],  # Clientes alternativos
+                'player_client': ['android', 'web'],
             }
         },
-        'retries': 3,                # Reintentos automáticos
-        'fragment_retries': 3,       # Reintentos para fragmentos
-        'timeout': 60,               # Timeout de 60 segundos
-        # ----------------------------
+        'retries': 3,
+        'fragment_retries': 3,
+        'timeout': 60,
     }
     try:
         with YoutubeDL(ydl_opts) as ydl:
@@ -152,7 +150,6 @@ def get_transcript(video_id):
                                     return transcript
                         except requests.exceptions.RequestException as e:
                             print(f"Error al descargar subtítulos de {video_id}: {e}")
-                            # Si falla la descarga del subtítulo, esperamos y continuamos
                             time.sleep(1)
                             continue
                 print(f"No se encontraron subtítulos en español o inglés para {video_id}")
@@ -161,7 +158,6 @@ def get_transcript(video_id):
             return None
     except Exception as e:
         print(f"Error al obtener la transcripción de {video_id}: {e}")
-        # Si falla, esperamos un poco y devolvemos None (el agente continuará)
         time.sleep(2)
         return None
 
@@ -198,8 +194,7 @@ def fetch_all_youtube_content():
             else:
                 print(f"  ❌ No se pudo obtener transcripción")
             
-            # Pausa más larga para evitar sobrecarga
-            time.sleep(2)  # Aumentado de 0.5 a 2 segundos
+            time.sleep(2)
     
     print(f"\n--- Búsqueda completada. {len(all_videos_with_transcripts)} videos con transcripción encontrados. ---")
     return all_videos_with_transcripts

@@ -55,7 +55,7 @@ def fetch_news_from_rss(feed_url: str) -> List[Dict]:
                     continue
 
             articles.append({
-                'title': entry.get('title', 'Sin título'),
+                'title': entry.get('title', 'Sin titulo'),
                 'link': entry.get('link', '#'),
                 'summary': entry.get('summary', ''),
                 'source': feed.feed.get('title', 'Fuente desconocida'),
